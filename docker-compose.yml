@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  kafka-spark-network:
+    driver: bridge
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafka-spark-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - 9094:9094
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+    networks:
+      - kafka-spark-network
+
+  pyspark:
+    image: bitnami/spark:latest
+    container_name: pyspark-local
+    ports:
+      - "4040:4040" # Spark UI
+      - "8080:8080" # Cluster UI
+      - "7077:7077" # Spark Master
+      - "6066:6066" # Submit Job Port
+    volumes:
+      - ./app:/opt/spark-app
+    networks:
+      - kafka-spark-network
+
+#docker-compose up -d
+#docker-compose down
+#docker exec -it pyspark-local spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 /opt/spark-app/pyspark_test.py
