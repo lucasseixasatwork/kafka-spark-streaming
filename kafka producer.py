@@ -2,7 +2,7 @@ import json
 import time
 import sys
 import random
-from confluent_kafka import Producer
+from confluent_kafka import Producer # type: ignore
 
 # Callback for delivery report
 def delivery_report(err, msg):

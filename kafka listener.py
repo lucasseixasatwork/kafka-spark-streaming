@@ -1,4 +1,4 @@
-from confluent_kafka import Consumer, KafkaException, KafkaError
+from confluent_kafka import Consumer, KafkaException, KafkaError # type: ignore
 import json
 
 # Kafka configuration
