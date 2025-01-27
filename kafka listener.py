@@ -12,7 +12,7 @@ kafka_config = {
 consumer = Consumer(kafka_config)
 
 # Subscribe to the topic
-topic = "kafka_1"  # Replace with your Kafka topic name
+topic = "spark_write_stream"  # Replace with your Kafka topic name
 consumer.subscribe([topic])
 
 print(f"Listening to Kafka topic: {topic}")
